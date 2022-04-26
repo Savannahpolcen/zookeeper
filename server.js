@@ -1,7 +1,8 @@
-const { animals } = require('./data/animals.json');
-// FOR ABOVE - front end wants 'animals' , this tells it where its at and where to get it 
-// need to tell pc to use express
 const express = require('express');
+// for ABOVE  need to tell pc to use express
+const { animals } = require('./data/animals.json');
+//front end wants 'animals' , this tells it where its at and where to get it 
+
 
 // Need to add in order to use Heroku
 const PORT = process.env.PORT || 3001;
@@ -24,13 +25,7 @@ function filterByQuery(query, animalsArray) {
     }
     // Loop through each trait in the personalityTraits array:
     personalityTraitsArray.forEach(trait => {
-      // Check the trait against each animal in the filteredResults array.
-      // Remember, it is initially a copy of the animalsArray,
-      // but here we're updating it for each trait in the .forEach() loop.
-      // For each trait being targeted by the filter, the filteredResults
-      // array will then contain only the entries that contain the trait,
-      // so at the end we'll have an array of animals that have every one 
-      // of the traits when the .forEach() loop is finished.
+     
       filteredResults = filteredResults.filter(
         animal => animal.personalityTraits.indexOf(trait) !== -1
       );
@@ -49,7 +44,11 @@ function filterByQuery(query, animalsArray) {
   return filteredResults;
 }
 
-
+// takes in animal info array and only returns one that matches ID
+function findById(id, animalsArray) {
+  const result = animalsArray.filter(animal => animal.id === id)[0];
+  return result;
+}
 
 // this is the route on HOW to get to the data we want 
 app.get('/api/animals', (req, res) => {
@@ -59,6 +58,16 @@ app.get('/api/animals', (req, res) => {
   }
   res.json(results);
 });
+
+app.get('/api/animals/:id', (req, res) => {
+  const result = findById(req.params.id, animals);
+  if (result) {
+    res.json(result);
+  } else {
+    res.send(404);
+  }
+});
+
 
 // MUST change from local host '3001' to PORT in order for Heroku to work 
 app.listen(PORT, () => {
